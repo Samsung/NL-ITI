@@ -1,0 +1,56 @@
+# activations
+python3 get_activations.py --dataset_name truthful_qa --dataset_split valid --prompt_format qa --n_last_tokens 6
+python3 get_activations.py --dataset_name truthful_qa --dataset_split valid --prompt_format endq --n_last_tokens 6
+
+
+# ITI #
+# probing
+python3 probing.py --dataset_name truthful_qa --dataset_split valid --probe_type linear --n_last_tokens 1 --fold 1
+python3 probing.py --dataset_name truthful_qa --dataset_split valid --probe_type linear --n_last_tokens 1 --fold 2
+
+# intervention
+python3 intervention.py --probing_name truthful_qa_valid_linear_logreg_last1_f1 --activations_direction truthful_qa --activations_std truthful_qa --activations_split valid --n_last_tokens 1 --fold 2 -ht
+python3 intervention.py --probing_name truthful_qa_valid_linear_logreg_last1_f2 --activations_direction truthful_qa --activations_std truthful_qa --activations_split valid --n_last_tokens 1 --fold 1 -ht
+
+
+# LLaMA-2-7B #
+# intervention (not using folds)
+python3 intervention.py --probing_name truthful_qa_valid_linear_logreg_last1_f1 --activations_direction truthful_qa --activations_std truthful_qa --activations_split valid --n_last_tokens 1 --heads 0
+
+
+# NL-ITI (ours) #
+# probing
+python3 probing.py --dataset_name truthful_qa --dataset_split valid --probe_type mlp --n_last_tokens 4 --fold 1 --ray_tune
+python3 probing.py --dataset_name truthful_qa --dataset_split valid --probe_type mlp --n_last_tokens 4 --fold 2 --ray_tune
+
+# intervention
+python3 intervention.py --probing_name truthful_qa_valid_mlp_s_last4_epochs10_f1 --activations_direction truthful_qa --activations_std truthful_qa --activations_split valid --n_last_tokens 6 --fold 2 -ht
+python3 intervention.py --probing_name truthful_qa_valid_mlp_s_last4_epochs10_f2 --activations_direction truthful_qa --activations_std truthful_qa --activations_split valid --n_last_tokens 6 --fold 1 -ht
+
+
+# NL-ITI (w/o optimized probe) #
+# probing
+python3 probing.py --dataset_name truthful_qa --dataset_split valid --probe_type linear --n_last_tokens 5 --fold 1
+python3 probing.py --dataset_name truthful_qa --dataset_split valid --probe_type linear --n_last_tokens 5 --fold 2
+
+# intervention
+python3 intervention.py --probing_name truthful_qa_valid_linear_logreg_last5_f1 --activations_direction truthful_qa --activations_std truthful_qa --activations_split valid --n_last_tokens 5 --fold 2 -ht
+python3 intervention.py --probing_name truthful_qa_valid_linear_logreg_last5_f2 --activations_direction truthful_qa --activations_std truthful_qa --activations_split valid --n_last_tokens 5 --fold 1 -ht
+
+
+# NL-ITI (w/o multi-token) #
+# probing
+python3 probing.py --dataset_name truthful_qa --dataset_split valid --probe_type mlp --n_last_tokens 1 --fold 1 --ray_tune
+python3 probing.py --dataset_name truthful_qa --dataset_split valid --probe_type mlp --n_last_tokens 1 --fold 2 --ray_tune
+
+# intervention
+python3 intervention.py --probing_name truthful_qa_valid_mlp_s_last1_epochs10_f1 --activations_direction truthful_qa --activations_std truthful_qa --activations_split valid --n_last_tokens 1 --fold 2 -ht
+python3 intervention.py --probing_name truthful_qa_valid_mlp_s_last1_epochs10_f2 --activations_direction truthful_qa --activations_std truthful_qa --activations_split valid --n_last_tokens 1 --fold 1 -ht
+
+
+# Final step #
+# merging results as in README + command to find the best result
+python3
+>>> import utils
+>>> utils.merge_fold_results('results_name_f1', 'results_name_f2')
+>>> utils.get_best_result('results_name_f2')

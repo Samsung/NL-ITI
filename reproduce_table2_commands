@@ -1,0 +1,40 @@
+# activations
+python3 get_activations.py --dataset_name truthful_qa --dataset_split valid --prompt_format qa --n_last_tokens 6
+python3 get_activations.py --dataset_name truthful_qa --dataset_split valid --prompt_format endq --n_last_tokens 6
+
+
+# probing
+python3 probing.py --dataset_name truthful_qa --dataset_split valid --probe_type linear --n_last_tokens 1
+python3 probing.py --dataset_name truthful_qa --dataset_split valid --probe_type mlp --n_last_tokens 1
+python3 probing.py --dataset_name truthful_qa --dataset_split valid --probe_type mlp --n_last_tokens 5
+
+
+# ARC-C #
+# base llama2-chat-7b result
+python3 intervention.py --probing_name truthful_qa_valid_linear_logreg_last1 --evaluation_dataset arc_c --evaluation_dataset_split test --n_last_tokens 1 --heads 0
+# ITI results
+python3 intervention.py --probing_name truthful_qa_valid_linear_logreg_last1 --evaluation_dataset arc_c --evaluation_dataset_split test --n_last_tokens 1 -ht
+# NL-ITI results
+python3 intervention.py --probing_name truthful_qa_valid_mlp_s_last5_epochs10 --evaluation_dataset arc_c --evaluation_dataset_split test --n_last_tokens 5 -ht
+
+# MMLU #
+# base llama2-chat-7b result
+python3 intervention.py --probing_name truthful_qa_valid_linear_logreg_last1 --evaluation_dataset mmlu --evaluation_dataset_split valid --n_last_tokens 1 --heads 0
+# ITI result
+python3 intervention.py --probing_name truthful_qa_valid_linear_logreg_last1 --evaluation_dataset mmlu --evaluation_dataset_split valid --n_last_tokens 1 -ht
+# NL-ITI result
+python3 intervention.py --probing_name truthful_qa_valid_mlp_s_last5_epochs10 --evaluation_dataset mmlu --evaluation_dataset_split valid --n_last_tokens 5 -ht
+
+# OpenbookQA #
+# base llama2-chat-7b result
+python3 intervention.py --probing_name truthful_qa_valid_linear_logreg_last1 --evaluation_dataset openbook_qa --evaluation_dataset_split test --n_last_tokens 1 --heads 0
+# ITI results
+python3 intervention.py --probing_name truthful_qa_valid_linear_logreg_last1 --evaluation_dataset openbook_qa --evaluation_dataset_split test --n_last_tokens 1 -ht
+# NL-ITI results
+python3 intervention.py --probing_name truthful_qa_valid_mlp_s_last1_epochs10 --evaluation_dataset openbook_qa --evaluation_dataset_split test --n_last_tokens 1 -ht
+
+
+# helpful to find the best result
+python3
+>>> import utils
+>>> utils.get_best_result('results_name')
